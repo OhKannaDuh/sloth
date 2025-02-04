@@ -1,0 +1,18 @@
+[submodule "external/classic"]
+	path = external/classic
+	url = https://github.com/rxi/classic.git
+[submodule "external/json.lua"]
+	path = external/json.lua
+	url = https://github.com/rxi/json.lua.git
+[submodule "external/json"]
+	path = external/json
+	url = https://github.com/rxi/json.lua.git
+[submodule "external/chat"]
+	path = external/chat
+	url = https://github.com/Adamcake/bolt-chatmodule.git
+[submodule "external/buff"]
+	path = external/buff
+	url = https://github.com/Adamcake/bolt-buffmodule.git
+[submodule "external/popup"]
+	path = external/popup
+	url = https://github.com/Adamcake/bolt-popupmodule.git
