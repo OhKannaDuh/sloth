@@ -2,33 +2,53 @@ Plugin = Object:extend()
 
 function Plugin:new()
     self.ready = false
-    self.tick_callbacks = {}
-    self.config = Config()
-    self.modules = {}
+
     self.bolt = require('bolt')
-    self.time = self.bolt.time()
+    self.config = Config()
+
+    self.tps = 20
+    self.interval = 1000000 / self.tps
+    self.last_tick = 0
+    self.next_tick = 0
+
+
+    self.callbacks = {
+        tick = {},
+        save = {}
+    }
+
+    self.modules = {}
 
     self.bolt.onswapbuffers(function()
-        if self.ready ~= true then
+        local time = self.bolt.time()
+        if self.ready ~= true or time < self.next_tick then
             return
         end
 
-        local delta = self.bolt.time() - self.time
-
-        for _, callback in pairs(self.tick_callbacks) do
+        for _, callback in pairs(self.callbacks.tick) do
             callback(self)
         end
 
+        local delta = time - self.last_tick
         for _, module in pairs(self.modules) do
             module:tick(delta)
         end
 
-        self.time = self.bolt.time()
+        self.last_tick = self.bolt.time()
+        self.next_tick = self.next_tick + self.interval
     end)
 end
 
 function Plugin:start()
     self.ready = true
+    self.last_tick = self.bolt.time()
+    self.next_tick = self.last_tick -- Don't add interval so we can run straight away
+end
+
+function Plugin:set_tps(tps)
+    self.tps = tps
+    self.interval = 1000000 / self.tps
+    self.next_tick = self.last_tick + self.interval
 end
 
 function Plugin:load_config(deafult)
@@ -39,6 +59,10 @@ end
 function Plugin:save_config()
     for key, module in pairs(self.modules) do
         self.config.data.modules[key] = module:get_save_data()
+    end
+
+    for _, callback in pairs(self.callbacks.save) do
+        callback(self)
     end
 
     self.config:save(self.bolt)
@@ -54,3 +78,11 @@ function Plugin:add_module(module)
     module:load_data_from_config(self.config.data)
 end
 
+function Plugin:add_callback(type, callback)
+    if self.callbacks[type] == nil then
+        error('No callback type: ' .. type)
+        return
+    end
+
+    table.insert(self.callbacks[type], callback)
+end
