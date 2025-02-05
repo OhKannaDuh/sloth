@@ -11,10 +11,14 @@ function Plugin:new()
     self.last_tick = 0
     self.next_tick = 0
 
-
     self.callbacks = {
         tick = {},
-        save = {}
+        save = {},
+        render2d = {},
+        render3d = {},
+        renderparticles = {},
+        rendericon = {},
+        renderbigicon = {}
     }
 
     self.modules = {}
@@ -25,17 +29,67 @@ function Plugin:new()
             return
         end
 
-        for _, callback in pairs(self.callbacks.tick) do
-            callback(self)
-        end
-
         local delta = time - self.last_tick
+        self.last_tick = self.bolt.time()
+        self.next_tick = self.next_tick + self.interval
+
         for _, module in pairs(self.modules) do
             module:tick(delta)
         end
 
-        self.last_tick = self.bolt.time()
-        self.next_tick = self.next_tick + self.interval
+        for _, callback in pairs(self.callbacks.tick) do
+            callback(self)
+        end
+    end)
+
+    self.bolt.onrender2d(function(event)
+        for _, module in pairs(self.modules) do
+            module:onrender2d(event)
+        end
+
+        for _, callback in pairs(self.callbacks.render2d) do
+            callback(self, event)
+        end
+    end)
+
+    self.bolt.onrender3d(function(event)
+        for _, module in pairs(self.modules) do
+            module:onrender3d(event)
+        end
+
+        for _, callback in pairs(self.callbacks.render3d) do
+            callback(self, event)
+        end
+    end)
+
+    self.bolt.onrenderparticles(function(event)
+        for _, module in pairs(self.modules) do
+            module:onrenderparticles(event)
+        end
+
+        for _, callback in pairs(self.callbacks.renderparticles) do
+            callback(self, event)
+        end
+    end)
+
+    self.bolt.onrendericon(function(event)
+        for _, module in pairs(self.modules) do
+            module:onrendericon(event)
+        end
+
+        for _, callback in pairs(self.callbacks.rendericon) do
+            callback(self, event)
+        end
+    end)
+
+    self.bolt.onrenderbigicon(function(event)
+        for _, module in pairs(self.modules) do
+            module:onrenderbigicon(event)
+        end
+
+        for _, callback in pairs(self.callbacks.renderbigicon) do
+            callback(self, event)
+        end
     end)
 end
 
@@ -58,7 +112,10 @@ end
 
 function Plugin:save_config()
     for key, module in pairs(self.modules) do
-        self.config.data.modules[key] = module:get_save_data()
+        local data = module:get_save_data()
+        if data ~= nil then
+            self.config.data.modules[key] =  data
+        end
     end
 
     for _, callback in pairs(self.callbacks.save) do
