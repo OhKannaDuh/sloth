@@ -1,6 +1,7 @@
 Plugin = Object:extend()
 
-function Plugin:new()
+function Plugin:new(name)
+    self.name = name
     self.ready = false
 
     self.bolt = require('bolt')
@@ -105,8 +106,9 @@ function Plugin:set_tps(tps)
     self.next_tick = self.last_tick + self.interval
 end
 
-function Plugin:load_config(deafult)
-    self.config:add_data(deafult)
+function Plugin:load_config(default)
+    default.debug = false
+    self.config:add_data(default)
     self.config:load(self.bolt)
 end
 
@@ -114,7 +116,7 @@ function Plugin:save_config()
     for key, module in pairs(self.modules) do
         local data = module:get_save_data()
         if data ~= nil then
-            self.config.data.modules[key] =  data
+            self.config.data.modules[key] = data
         end
     end
 
@@ -142,4 +144,45 @@ function Plugin:add_callback(type, callback)
     end
 
     table.insert(self.callbacks[type], callback)
+end
+
+function Plugin:table_to_string(o)
+    if type(o) == 'table' then
+        local s = '{ '
+        for k, v in pairs(o) do
+            if type(k) ~= 'number' then
+                k = '"' .. k .. '"'
+            end
+            s = s .. '[' .. k .. '] = ' .. self:table_to_string(v) .. ','
+        end
+        return s .. '} '
+    else
+        return tostring(o)
+    end
+end
+
+function Plugin:print(type, message)
+    message = self:table_to_string(message)
+    print(string.format("[%s][%s]: %s", self.name, type, message))
+end
+
+function Plugin:info(message)
+    self:print('info', message)
+end
+
+function Plugin:warn(message)
+    self:print('warn', message)
+end
+
+function Plugin:error(message)
+    message = self:table_to_string(message)
+    error(string.format("[%s][error]: %s", self.name, message))
+end
+
+function Plugin:debug(message)
+    if not self.config.data.debug then
+        return
+    end
+
+    self:print('debug', message)
 end
