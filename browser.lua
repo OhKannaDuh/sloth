@@ -1,11 +1,7 @@
 Browser = Object:extend()
 
 function Browser.default_config()
-    return {
-        showdevtools = false,
-        height = 250,
-        width = 400
-    }
+    return {showdevtools = false, height = 250, width = 400}
 end
 
 function Browser:new(plugin, config)
@@ -41,8 +37,10 @@ function Browser:setup()
 end
 
 function Browser:open()
-    self.browser = self.plugin.bolt.createbrowser(self.config.width, self.config.height, self.config.path,
-        self.config.js)
+    self.browser = self.plugin.bolt.createbrowser(self.config.width,
+                                                  self.config.height,
+                                                  self.config.path,
+                                                  self.config.js)
 
     self:setup()
 end
@@ -61,10 +59,7 @@ function Browser:toggle()
 end
 
 function Browser:message(type, message)
-    self.browser:sendmessage(Json.encode({
-        type = type,
-        data = message
-    }))
+    self.browser:sendmessage(Json.encode({type = type, data = message}))
 end
 
 function Browser:enablecapture()

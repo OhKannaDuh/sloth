@@ -1,11 +1,8 @@
 Config = Object:extend()
 
 function Config:new(plugin)
-    -- self.plugin = plugin
     self.file = 'config.json'
-    self.data = {
-        modules = {}
-    }
+    self.data = {modules = {}}
 end
 
 function Config:merge(base, overrides)

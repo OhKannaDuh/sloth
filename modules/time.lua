@@ -18,13 +18,17 @@ function Time:new(plugin)
     self.minute = 0;
 end
 
-function Time:key() return 'time' end
+function Time:key()
+    return 'time'
+end
 
 function Time:load_data_from_config(config)
     local year, month, day, hour, minute, _ = self.plugin.bolt.datetime()
     local weekday = self.plugin.bolt.weekday()
 
-    if config.modules.time == nil then config.modules.time = {} end
+    if config.modules.time == nil then
+        config.modules.time = {}
+    end
 
     self.year = config.modules.time.year or year
     self.month = config.modules.time.month or month

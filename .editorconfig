@@ -1,0 +1,7 @@
+column_limit: 120
+column_table_limit: 80
+keep_simple_control_block_one_line: false
+keep_simple_function_one_line: false
+align_parameter: false
+chop_down_table: true
+double_quote_to_single_quote: true

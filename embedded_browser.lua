@@ -15,6 +15,10 @@ function EmbeddedBrowser:open()
     self:setup()
 end
 
-function EmbeddedBrowser:startreposition() self.browser:startreposition() end
+function EmbeddedBrowser:startreposition()
+    self.browser:startreposition()
+end
 
-function EmbeddedBrowser:cancelreposition() self.browser:cancelreposition() end
+function EmbeddedBrowser:cancelreposition()
+    self.browser:cancelreposition()
+end
