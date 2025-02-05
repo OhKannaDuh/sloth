@@ -16,3 +16,6 @@
 [submodule "external/popup"]
 	path = external/popup
 	url = https://github.com/Adamcake/bolt-popupmodule.git
+[submodule "external/buffs"]
+	path = external/buffs
+	url = https://github.com/Adamcake/bolt-buffmodule.git
