@@ -10,10 +10,17 @@ end
 
 function Browser:new(plugin, config)
     self.browser = nil
-    self.message_callbacks = {}
+
+    self.callbacks = {
+        message = {},
+        close = {},
+        after_close = {},
+        reposition = {},
+        setup = {}
+    }
+
     self.plugin = plugin
     self.config = config
-    self.setup_callback = nil
 end
 
 function Browser:setup()
@@ -25,23 +32,25 @@ function Browser:setup()
         self:close()
     end)
 
-    self:onmessage('close', function()
-        self:close()
-    end)
-
     self.browser:onmessage(function(message)
         message = Json.decode(message)
-        if self.message_callbacks[message.type] == nil then
+        if self.callbacks.message[message.type] == nil then
             return
         end
 
-        for _, callback in pairs(self.message_callbacks[message.type]) do
+        for _, callback in pairs(self.callbacks.message[message.type]) do
             callback(message.data)
         end
     end)
 
-    if self.setup_callback ~= nil then
-        self.setup_callback(self)
+    self.browser:onreposition(function(event)
+        for _, callback in pairs(self.callbacks.reposition) do
+            callback(event, self)
+        end
+    end)
+
+    for _, callback in pairs(self.callbacks.setup) do
+        callback(self)
     end
 end
 
@@ -57,8 +66,16 @@ function Browser:open()
 end
 
 function Browser:close()
+    for _, callback in pairs(self.callbacks.close) do
+        callback(self)
+    end
+
     self.browser:close()
     self.browser = nil
+
+    for _, callback in pairs(self.callbacks.after_close) do
+        callback(self)
+    end
 end
 
 function Browser:toggle()
@@ -88,11 +105,15 @@ function Browser:showdevtools()
     self.browser:showdevtools()
 end
 
+function Browser:add_callback(type, callback)
+    table.insert(self.callbacks[type], callback)
+end
+
 function Browser:onmessage(type, callback)
-    if self.message_callbacks[type] == nil then
-        self.message_callbacks[type] = {}
+    if self.callbacks.message[type] == nil then
+        self.callbacks.message[type] = {}
     end
 
-    table.insert(self.message_callbacks[type], callback)
+    table.insert(self.callbacks.message[type], callback)
 end
 
