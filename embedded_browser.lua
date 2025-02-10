@@ -11,7 +11,7 @@ function EmbeddedBrowser.default_config()
 end
 
 function EmbeddedBrowser:setup()
-    EmbeddedBrowser.super:setup()
+    EmbeddedBrowser.super.setup(self)
 
     self.browser:onreposition(function(event)
         for _, callback in pairs(self.callbacks.reposition) do
