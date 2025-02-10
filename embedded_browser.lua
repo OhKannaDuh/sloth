@@ -6,7 +6,8 @@ function EmbeddedBrowser.default_config()
         y = 0,
         x = 0,
         height = 250,
-        width = 400
+        width = 400,
+        sacle = 1
     }
 end
 

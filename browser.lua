@@ -4,7 +4,8 @@ function Browser.default_config()
     return {
         showdevtools = false,
         height = 250,
-        width = 400
+        width = 400,
+        scale = 1
     }
 end
 
