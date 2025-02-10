@@ -43,12 +43,6 @@ function Browser:setup()
         end
     end)
 
-    self.browser:onreposition(function(event)
-        for _, callback in pairs(self.callbacks.reposition) do
-            callback(event, self)
-        end
-    end)
-
     for _, callback in pairs(self.callbacks.setup) do
         callback(self)
     end
